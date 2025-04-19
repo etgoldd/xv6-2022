@@ -1,0 +1,16 @@
+
+a2 holds 13 for the printf call in main. a0 through a7 are all function argument registers
+
+There is no direct call to f from main, but rather the compiler already calculated f(8) for the program,
+and just replaced the result where its supposed to go, in a1. 
+
+Something similar is done with g, but rather than precalculating the value, the compiler took the only
+relevant instruction from g, and placed it directly in f, in a sense removing g's usage directly from f
+
+printf is loaded at 1626
+
+the value of ra right before the call to printf is the return address of main, as in, 52
+
+hex works
+you would need to flip i backwards (bytewise) to get the same result. you wouldnt need to change 57616 since %x prints the number itself, not the bytes in memory.
+
