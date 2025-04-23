@@ -2,7 +2,6 @@
 struct context {
   uint64 ra;
   uint64 sp;
-
   // callee-saved
   uint64 s0;
   uint64 s1;
@@ -16,6 +15,7 @@ struct context {
   uint64 s9;
   uint64 s10;
   uint64 s11;
+  uint64 a0;
 };
 
 // Per-CPU state.
@@ -91,7 +91,11 @@ struct proc {
   int killed;                  // If non-zero, have been killed
   int xstate;                  // Exit status to be returned to parent's wait
   int pid;                     // Process ID
-
+  int ticks;
+  int alarm;
+  struct trapframe pre_handler_ctx;
+  int a0;
+  void (*handler)();
   // wait_lock must be held when using this:
   struct proc *parent;         // Parent process
 

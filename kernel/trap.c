@@ -56,10 +56,11 @@ usertrap(void)
     if(killed(p))
       exit(-1);
 
+    
     // sepc points to the ecall instruction,
     // but we want to return to the next instruction.
     p->trapframe->epc += 4;
-
+    
     // an interrupt will change sepc, scause, and sstatus,
     // so enable only now that we're done with those registers.
     intr_on();
@@ -77,9 +78,21 @@ usertrap(void)
     exit(-1);
 
   // give up the CPU if this is a timer interrupt.
-  if(which_dev == 2)
+  if (which_dev == 2 && (p->alarm == 0 || p->ticks >= p->alarm)) {
     yield();
-
+  }
+  
+  if(which_dev == 2 && p->alarm > p->ticks){
+    p->ticks++;
+    if (p->ticks != p->alarm) {
+      yield();
+      usertrapret();
+    }
+    p->a0 = p->trapframe->a0;
+    p->pre_handler_ctx = *(p->trapframe);
+    p->pre_handler_ctx.a0 = p->trapframe->a0;
+    p->trapframe->epc = (uint64)p->handler;
+  }
   usertrapret();
 }
 
